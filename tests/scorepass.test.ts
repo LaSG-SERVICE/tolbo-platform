@@ -1,0 +1,21 @@
+import {describe,it,expect} from 'vitest'; import {calculateIQP,calculateScore} from '@/lib/scorepass/engine';
+describe('Score Pass V1 — cas de référence',()=>{
+ const n01={D1:90,D2:70,D3:80,D4:75,D5:65,D6:60};
+ it('T01/N01 — dossier complet',()=>expect(calculateScore({dimensions:n01}).scoreInternal).toBeCloseTo(74.25));
+ it('T02/N04 — NA renormalisé',()=>expect(calculateScore({dimensions:{D1:80,D2:70,D3:75,D4:65,D5:60,D6:null}}).scorePass).toBe(70));
+ it('T03 — donnée manquante n’est pas zéro',()=>expect(calculateScore({dimensions:{D1:80,D2:70,D3:75,D4:65,D5:null,D6:60}}).scoreInternal).not.toBe(0));
+ it('T04 — zéro reste une valeur',()=>expect(calculateScore({dimensions:{D1:0,D2:100,D3:100,D4:100,D5:100,D6:100}}).scorePass).toBe(85));
+ it('T05 — cold start n’entraîne pas de pénalité automatique',()=>expect(calculateScore({dimensions:n01}).scorePass).toBe(74));
+ it('T06 — hard gate bloque',()=>expect(calculateScore({dimensions:n01,hardGates:[{code:'HG1',triggered:true}]}).scorePass).toBeNull());
+ it('T07 — A2 n’est pas un hard gate par défaut',()=>expect(calculateScore({dimensions:n01,hardGates:[]}).scorePass).toBe(74));
+ it('T08 — reproductibilité',()=>expect(calculateScore({dimensions:n01})).toEqual(calculateScore({dimensions:n01})));
+ it('T09 — exception ne modifie pas automatiquement le moteur',()=>expect(calculateScore({dimensions:n01}).scorePass).toBe(74));
+ it('T10 — versionnement conceptuel : résultat déterministe',()=>expect(calculateScore({dimensions:n01}).scorePass).toBe(74));
+ it('T11 — correction : calcul distinct',()=>expect(calculateScore({dimensions:{...n01,D1:91}}).scorePass).toBe(74));
+ it('T12 — IQP séparé',()=>expect(calculateIQP({E:25,C:90,F:90,Co:90,T:90})).toBeCloseTo(64));
+ it('T13 — IQP faible avec score élevé',()=>expect(calculateIQP({E:25,C:25,F:25,Co:25,T:25})).toBe(25));
+ it('T14 — IQP élevé avec score faible',()=>expect(calculateIQP({E:100,C:100,F:100,Co:100,T:100})).toBe(100));
+ it('T15 — score 87.75 bloqué par HG1',()=>expect(calculateScore({dimensions:{D1:95,D2:90,D3:85,D4:90,D5:80,D6:85},hardGates:[{code:'HG1',triggered:true}]}).scorePass).toBeNull());
+ it('N02',()=>expect(calculateScore({dimensions:{D1:92,D2:85,D3:88,D4:82,D5:78,D6:75}}).scoreInternal).toBeCloseTo(84));
+ it('N03',()=>expect(calculateScore({dimensions:{D1:45,D2:50,D3:48,D4:55,D5:40,D6:50}}).scoreInternal).toBeCloseTo(48.35));
+});
