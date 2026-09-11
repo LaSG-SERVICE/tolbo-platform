@@ -2,6 +2,7 @@
   "name": "tolbo-web-v1",
   "version": "1.0.0",
   "private": true,
+
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -12,6 +13,7 @@
     "test:watch": "vitest",
     "audit": "npm audit --audit-level=moderate"
   },
+
   "dependencies": {
     "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.57.0",
@@ -23,17 +25,19 @@
     "tailwindcss": "^4.3.3",
     "zod": "^4.1.0"
   },
+
   "devDependencies": {
     "@types/node": "^22.15.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
-    "eslint": "^10.10.0",
+    "eslint": "^9.39.5",
     "eslint-config-next": "16.3.4",
     "typescript": "^5.9.3",
     "vitest": "^3.2.4"
   },
+
   "engines": {
-    "node": ">=20.9.0",
-    "npm": ">=10.0.0"
+    "node": "20.x",
+    "npm": "10.x"
   }
 }
