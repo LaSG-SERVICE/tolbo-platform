@@ -1,3 +1,4 @@
+import { EnterpriseIllustration } from "@/components/EnterpriseIllustration";
 import Link from "next/link";
 import {
   Activity,
@@ -35,7 +36,7 @@ export default function Evaluations() {
   ).length;
 
   return (
-    <div className="space-y-8">
+    <div className="tolbo-client-page tolbo-evaluations-page space-y-8">
       {/* ============================================================
           HEADER
       ============================================================ */}
@@ -58,6 +59,8 @@ export default function Evaluations() {
               Score Pass depuis un espace unique.
             </p>
           </div>
+
+          <EnterpriseIllustration variant="evaluations" />
 
           <Link
             href="/client/evaluations/new"

@@ -1,5 +1,6 @@
 "use client";
 
+import { EnterpriseIllustration } from "@/components/EnterpriseIllustration";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -13,7 +14,7 @@ import {
 
 export default function Page() {
   return (
-    <main className="min-h-screen bg-[var(--bg)]">
+    <main className="tolbo-client-page tolbo-score-pass-page">
       <div className="container py-8 md:py-10">
 
         {/* ============================================================
@@ -39,6 +40,8 @@ export default function Page() {
                 résultat Score Pass.
               </p>
             </div>
+
+            <EnterpriseIllustration variant="score" />
 
             <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-3">
               <ShieldCheck className="h-4 w-4 text-white/70" />

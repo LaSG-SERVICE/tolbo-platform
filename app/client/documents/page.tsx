@@ -1,5 +1,6 @@
 "use client";
 
+import { EnterpriseIllustration } from "@/components/EnterpriseIllustration";
 import { useEffect, useRef, useState } from "react";
 import {
   CheckCircle2,
@@ -274,7 +275,7 @@ export default function Documents() {
   }
 
   return (
-    <div className="space-y-7">
+    <div className="tolbo-client-page tolbo-documents-page space-y-7">
       {/* ============================================================
           HEADER
       ============================================================ */}
@@ -296,6 +297,8 @@ export default function Documents() {
               entreprise et à vos évaluations TOLBO.
             </p>
           </div>
+
+          <EnterpriseIllustration variant="documents" />
 
           <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
             <ShieldCheck className="h-5 w-5 text-[var(--blue)]" />

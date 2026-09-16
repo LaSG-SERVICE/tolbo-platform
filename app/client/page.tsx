@@ -4,7 +4,7 @@ import {
   BarChart3,
   Building2,
   CheckCircle2,
-  ChevronRight,
+  ClipboardCheck,
   Clock3,
   FileCheck2,
   FileText,
@@ -16,15 +16,11 @@ import { createClient } from "@/lib/supabase/server";
 
 export default async function ClientDashboard() {
   let orgName = "Votre entreprise";
-  let status = "IN_PROGRESS";
   let configured = !!process.env.NEXT_PUBLIC_SUPABASE_URL;
 
   if (configured) {
     const sb = await createClient();
-
-    const {
-      data: { user },
-    } = await sb.auth.getUser();
+    const { data: { user } } = await sb.auth.getUser();
 
     if (user) {
       const { data: membership } = await sb
@@ -34,471 +30,124 @@ export default async function ClientDashboard() {
         .limit(1)
         .maybeSingle();
 
-      if (
-        membership?.organizations &&
-        !Array.isArray(membership.organizations)
-      ) {
+      if (membership?.organizations && !Array.isArray(membership.organizations)) {
         orgName = (membership.organizations as { name?: string }).name ?? orgName;
       }
     }
   }
 
-  const statusLabel =
-    status === "IN_PROGRESS" ? "Évaluation en cours" : status;
-
   return (
-    <main className="min-h-screen bg-[var(--bg)]">
-      <div className="container py-8 md:py-10">
-
-        {/* ============================================================
-            HERO
-        ============================================================ */}
-        <section className="relative overflow-hidden rounded-3xl bg-[var(--navy)] px-6 py-8 text-white shadow-[0_20px_50px_rgba(8,27,51,0.14)] md:px-9 md:py-10">
-          <div className="absolute inset-0 bg-grid opacity-10" />
-
-          <div className="relative flex flex-col gap-7 lg:flex-row lg:items-end lg:justify-between">
+    <main className="tolbo-client-page tolbo-dashboard">
+      <div className="container">
+        <section className="tolbo-dashboard-hero">
+          <div className="tolbo-dashboard-hero-bg" />
+          <div className="tolbo-dashboard-hero-content">
             <div>
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold tracking-wide text-white/80">
-                <Building2 className="h-3.5 w-3.5" />
-                ESPACE ENTREPRISE
+              <div className="tolbo-overline tolbo-overline-light">
+                <Building2 className="h-3.5 w-3.5" /> ESPACE ENTREPRISE
               </div>
-
-              <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
-                Tableau de bord
-              </h1>
-
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-white/65 md:text-base">
-                Bienvenue dans votre espace entreprise. Suivez vos dossiers,
-                transmettez vos informations et préparez votre évaluation
-                Score Pass.
+              <h1>Bonjour, bienvenue dans votre espace TOLBO.</h1>
+              <p>
+                Pilotez votre dossier depuis un seul espace : profil entreprise,
+                évaluations, justificatifs et suivi des demandes.
               </p>
-            </div>
-
-            <Link
-              href="/client/evaluations/new"
-              className="inline-flex w-fit items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-[var(--navy)] shadow-lg transition hover:-translate-y-0.5 hover:bg-slate-50"
-            >
-              <Plus className="h-4 w-4" />
-              Nouvelle évaluation
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-        </section>
-
-        {/* ============================================================
-            KPI
-        ============================================================ */}
-        <section className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-
-          <KpiCard
-            icon={<Building2 className="h-5 w-5" />}
-            label="Entreprise"
-            value={orgName}
-            description="Organisation associée à votre compte"
-          />
-
-          <KpiCard
-            icon={<BarChart3 className="h-5 w-5" />}
-            label="Dossiers en cours"
-            value={configured ? "—" : "0"}
-            description="Évaluations actuellement suivies"
-          />
-
-          <KpiCard
-            icon={<FileText className="h-5 w-5" />}
-            label="Documents"
-            value={configured ? "—" : "0"}
-            description="Documents transmis à votre espace"
-          />
-
-          <div className="card p-5">
-            <div className="flex items-center justify-between">
-              <div className="icon-box">
-                <Clock3 className="h-5 w-5" />
-              </div>
-
-              <span className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-700">
-                <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
-                En cours
-              </span>
-            </div>
-
-            <div className="mt-5">
-              <div className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
-                Statut
-              </div>
-
-              <div className="mt-2 text-base font-semibold text-[var(--ink)]">
-                {statusLabel}
+              <div className="tolbo-hero-meta">
+                <span><span className="tolbo-status-dot" /> Espace sécurisé</span>
+                <span>Organisation · {orgName}</span>
               </div>
             </div>
-          </div>
-
-        </section>
-
-        {/* ============================================================
-            MAIN CONTENT
-        ============================================================ */}
-        <section className="mt-6 grid gap-6 lg:grid-cols-[1.3fr_0.7fr]">
-
-          {/* PARCOURS */}
-          <div className="card overflow-hidden">
-            <div className="border-b border-slate-200 px-6 py-5 md:px-7">
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <div className="text-xs font-bold uppercase tracking-[0.12em] text-blue-700">
-                    Parcours
-                  </div>
-
-                  <h2 className="mt-1 text-xl font-semibold text-[var(--ink)]">
-                    Votre parcours TOLBO
-                  </h2>
-
-                  <p className="mt-1 text-sm text-[var(--muted)]">
-                    Les principales étapes de constitution et de traitement
-                    de votre dossier.
-                  </p>
-                </div>
-
-                <div className="hidden rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-500 sm:block">
-                  Score Pass V1
-                </div>
-              </div>
-            </div>
-
-            <div className="divide-y divide-slate-200">
-
-              <JourneyStep
-                number="01"
-                title="Profil entreprise"
-                description="Vérifier et compléter les informations générales."
-                status="À préparer"
-                href="/client/company"
-              />
-
-              <JourneyStep
-                number="02"
-                title="Données d’évaluation"
-                description="Renseigner les variables nécessaires au dossier."
-                status="À préparer"
-                href="/client/evaluations"
-              />
-
-              <JourneyStep
-                number="03"
-                title="Documents justificatifs"
-                description="Transmettre les éléments permettant d’étayer les informations."
-                status="À préparer"
-                href="/client/documents"
-              />
-
-              <JourneyStep
-                number="04"
-                title="Demandes de complément"
-                description="Répondre aux éventuelles demandes formulées par TOLBO."
-                status="À suivre"
-                href="/client/requests"
-              />
-
-              <JourneyStep
-                number="05"
-                title="Vérification TOLBO"
-                description="Contrôle des données, preuves et éléments du dossier."
-                status="À venir"
-                href="/client/score-pass"
-              />
-
-            </div>
-          </div>
-
-          {/* ACTIONS */}
-          <div className="space-y-6">
-
-            <div className="card p-6 md:p-7">
-              <div className="icon-box mb-5">
-                <CheckCircle2 className="h-5 w-5" />
-              </div>
-
-              <div className="text-xs font-bold uppercase tracking-[0.12em] text-blue-700">
-                Actions prioritaires
-              </div>
-
-              <h2 className="mt-1 text-xl font-semibold text-[var(--ink)]">
-                Prochaines actions
-              </h2>
-
-              <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-                Préparez les éléments nécessaires à la poursuite de votre
-                dossier.
-              </p>
-
-              <div className="mt-6 space-y-3">
-                <ActionButton
-                  href="/client/company"
-                  icon={<Building2 className="h-4 w-4" />}
-                  label="Compléter le profil entreprise"
-                />
-
-                <ActionButton
-                  href="/client/documents"
-                  icon={<Upload className="h-4 w-4" />}
-                  label="Ajouter un document"
-                />
-
-                <ActionButton
-                  href="/client/requests"
-                  icon={<FileCheck2 className="h-4 w-4" />}
-                  label="Consulter les demandes TOLBO"
-                />
-              </div>
-            </div>
-
-            {/* INFO SCORE PASS */}
-            <div className="premium-card p-6 md:p-7">
-              <div className="icon-box mb-5">
-                <ShieldCheck className="h-5 w-5" />
-              </div>
-
-              <h2 className="text-base font-semibold text-[var(--ink)]">
-                Préparer votre Score Pass
-              </h2>
-
-              <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-                Le Score Pass s&apos;appuie sur les données et preuves
-                disponibles à la date de l&apos;évaluation. Une information
-                manquante n&apos;est pas automatiquement considérée comme
-                une valeur nulle.
-              </p>
-
-              <Link
-                href="/client/score-pass"
-                className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-blue-700 transition hover:text-blue-800"
-              >
-                Consulter le module Score Pass
-                <ArrowRight className="h-4 w-4" />
+            <div className="tolbo-dashboard-hero-actions">
+              <Link href="/client/evaluations/new" className="tolbo-btn tolbo-btn-light">
+                <Plus className="h-4 w-4" /> Nouvelle évaluation <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link href="/client/company" className="tolbo-btn tolbo-btn-ghost-light">
+                Vérifier mon profil
               </Link>
             </div>
-
           </div>
         </section>
 
-        {/* ============================================================
-            DOCUMENTS / EVALUATION
-        ============================================================ */}
-        <section className="mt-6 grid gap-5 md:grid-cols-2">
-
-          <DashboardFeature
-            icon={<BarChart3 className="h-5 w-5" />}
-            eyebrow="Évaluation"
-            title="Suivre vos évaluations"
-            description="Accédez à vos dossiers, consultez leur progression et poursuivez la saisie des informations nécessaires."
-            href="/client/evaluations"
-            action="Voir mes évaluations"
-          />
-
-          <DashboardFeature
-            icon={<FileText className="h-5 w-5" />}
-            eyebrow="Documents"
-            title="Gérer vos justificatifs"
-            description="Centralisez les documents transmis dans votre espace et préparez les éléments nécessaires à vos dossiers."
-            href="/client/documents"
-            action="Voir les documents"
-          />
-
+        <section className="tolbo-dashboard-status">
+          <div>
+            <div className="tolbo-overline">VUE D’ENSEMBLE</div>
+            <h2>Suivi de votre dossier</h2>
+            <p>Votre parcours TOLBO est prêt à être complété étape par étape.</p>
+          </div>
+          <div className="tolbo-progress-block">
+            <div className="tolbo-progress-top"><strong>17%</strong><span>complété</span></div>
+            <div className="tolbo-progress"><span style={{ width: "17%" }} /></div>
+            <span className="tolbo-progress-note">Prochaine priorité : compléter le profil entreprise</span>
+          </div>
         </section>
 
-        {/* ============================================================
-            FOOTER NOTICE
-        ============================================================ */}
-        <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-5">
-          <div className="flex gap-3">
-            <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-slate-500" />
+        <section className="tolbo-dashboard-kpis">
+          <KpiCard icon={<Building2 />} label="Profil entreprise" value="17%" note="Informations à compléter" tone="blue" />
+          <KpiCard icon={<ClipboardCheck />} label="Évaluation" value="1" note="Dossier actuellement suivi" tone="navy" />
+          <KpiCard icon={<FileText />} label="Documents" value={configured ? "—" : "0"} note="Justificatifs transmis" tone="slate" />
+          <KpiCard icon={<Clock3 />} label="Statut" value="En cours" note="Traitement du dossier" tone="orange" />
+        </section>
 
-            <div>
-              <div className="text-sm font-semibold text-[var(--ink)]">
-                Votre espace entreprise
+        <section className="tolbo-dashboard-grid">
+          <div className="tolbo-panel tolbo-panel-main">
+            <div className="tolbo-panel-head">
+              <div>
+                <div className="tolbo-overline">PARCOURS TOLBO</div>
+                <h2>Les prochaines étapes</h2>
+                <p>Avancez dans l’ordre recommandé pour constituer un dossier exploitable.</p>
               </div>
-
-              <p className="mt-1 text-sm leading-6 text-[var(--muted)]">
-                Les informations affichées dans ce tableau de bord sont
-                destinées au suivi de votre parcours TOLBO. Les données
-                officielles, statuts et résultats seront alimentés par les
-                données Supabase lorsque les modules correspondants seront
-                connectés.
-              </p>
+              <span className="tolbo-chip">Score Pass V1</span>
+            </div>
+            <div className="tolbo-step-list">
+              <JourneyStep number="01" title="Compléter le profil entreprise" description="Identité, secteur, localisation et informations de référence." status="Prioritaire" href="/client/company" active />
+              <JourneyStep number="02" title="Renseigner l’évaluation" description="Compléter les données nécessaires à votre dossier Score Pass." status="À préparer" href="/client/evaluations" />
+              <JourneyStep number="03" title="Déposer les justificatifs" description="Centraliser les documents permettant d’étayer les informations déclarées." status="À préparer" href="/client/documents" />
+              <JourneyStep number="04" title="Répondre aux demandes TOLBO" description="Consulter les éventuels compléments demandés par l’équipe TOLBO." status="À suivre" href="/client/requests" />
+              <JourneyStep number="05" title="Consulter le Score Pass" description="Retrouver le résultat et les éléments de lecture de votre évaluation." status="À venir" href="/client/score-pass" />
             </div>
           </div>
+
+          <aside className="tolbo-dashboard-side">
+            <div className="tolbo-panel tolbo-actions-panel">
+              <div className="tolbo-overline">ACTIONS RAPIDES</div>
+              <h2>Que souhaitez-vous faire ?</h2>
+              <p>Accédez directement aux fonctions les plus utilisées.</p>
+              <div className="tolbo-action-list">
+                <ActionButton href="/client/company" icon={<Building2 />} label="Compléter mon entreprise" />
+                <ActionButton href="/client/documents" icon={<Upload />} label="Ajouter un document" />
+                <ActionButton href="/client/requests" icon={<FileCheck2 />} label="Voir les demandes" />
+              </div>
+            </div>
+
+            <div className="tolbo-panel tolbo-score-card">
+              <div className="tolbo-score-icon"><BarChart3 /></div>
+              <div className="tolbo-overline">SCORE PASS</div>
+              <h2>Préparez votre évaluation</h2>
+              <p>Un dossier complet facilite la vérification des données et la lecture de votre évaluation.</p>
+              <Link href="/client/score-pass" className="tolbo-text-link">Ouvrir Score Pass <ArrowRight className="h-4 w-4" /></Link>
+            </div>
+          </aside>
         </section>
 
+        <section className="tolbo-dashboard-bottom">
+          <div className="tolbo-info-strip">
+            <div className="tolbo-info-icon"><ShieldCheck /></div>
+            <div><strong>Vos données restent dans votre espace organisationnel.</strong><p>Les statuts et résultats affichés ici sont alimentés par les modules connectés de TOLBO.</p></div>
+          </div>
+          <Link href="/client/notifications" className="tolbo-activity-link"><span><CheckCircle2 /> Centre de notifications</span><ArrowRight /></Link>
+        </section>
       </div>
     </main>
   );
 }
 
-/* ================================================================
-   KPI CARD
-================================================================ */
-
-function KpiCard({
-  icon,
-  label,
-  value,
-  description,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  description: string;
-}) {
-  return (
-    <div className="card p-5">
-      <div className="icon-box">
-        {icon}
-      </div>
-
-      <div className="mt-5">
-        <div className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
-          {label}
-        </div>
-
-        <div className="mt-2 truncate text-xl font-bold text-[var(--ink)]">
-          {value}
-        </div>
-
-        <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
-          {description}
-        </p>
-      </div>
-    </div>
-  );
+function KpiCard({ icon, label, value, note, tone }: { icon: React.ReactNode; label: string; value: string; note: string; tone: "blue" | "navy" | "slate" | "orange" }) {
+  return <div className={`tolbo-kpi tolbo-kpi-${tone}`}><div className="tolbo-kpi-top"><span className="tolbo-kpi-icon">{icon}</span><span className="tolbo-kpi-label">{label}</span></div><strong>{value}</strong><span>{note}</span></div>;
 }
 
-/* ================================================================
-   JOURNEY STEP
-================================================================ */
-
-function JourneyStep({
-  number,
-  title,
-  description,
-  status,
-  href,
-}: {
-  number: string;
-  title: string;
-  description: string;
-  status: string;
-  href: string;
-}) {
-  return (
-    <Link
-      href={href}
-      className="group flex items-center gap-4 p-5 transition hover:bg-slate-50 md:px-7"
-    >
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-600 transition group-hover:border-blue-200 group-hover:bg-blue-50 group-hover:text-blue-700">
-        {number}
-      </div>
-
-      <div className="min-w-0 flex-1">
-        <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3">
-          <h3 className="text-sm font-semibold text-[var(--ink)]">
-            {title}
-          </h3>
-
-          <span className="w-fit rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-semibold text-slate-500">
-            {status}
-          </span>
-        </div>
-
-        <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
-          {description}
-        </p>
-      </div>
-
-      <ChevronRight className="h-4 w-4 shrink-0 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-slate-500" />
-    </Link>
-  );
+function JourneyStep({ number, title, description, status, href, active = false }: { number: string; title: string; description: string; status: string; href: string; active?: boolean }) {
+  return <Link href={href} className={`tolbo-step ${active ? "is-active" : ""}`}><span className="tolbo-step-number">{number}</span><span className="tolbo-step-copy"><span className="tolbo-step-title">{title}</span><span className="tolbo-step-description">{description}</span></span><span className={`tolbo-step-status ${active ? "is-priority" : ""}`}>{status}</span><ArrowRight className="tolbo-step-arrow" /></Link>;
 }
 
-/* ================================================================
-   ACTION BUTTON
-================================================================ */
-
-function ActionButton({
-  href,
-  icon,
-  label,
-}: {
-  href: string;
-  icon: React.ReactNode;
-  label: string;
-}) {
-  return (
-    <Link
-      href={href}
-      className="group flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-[var(--ink)] transition hover:border-blue-200 hover:bg-blue-50/50"
-    >
-      <span className="text-blue-700">
-        {icon}
-      </span>
-
-      <span className="flex-1">
-        {label}
-      </span>
-
-      <ArrowRight className="h-4 w-4 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-blue-700" />
-    </Link>
-  );
-}
-
-/* ================================================================
-   DASHBOARD FEATURE
-================================================================ */
-
-function DashboardFeature({
-  icon,
-  eyebrow,
-  title,
-  description,
-  href,
-  action,
-}: {
-  icon: React.ReactNode;
-  eyebrow: string;
-  title: string;
-  description: string;
-  href: string;
-  action: string;
-}) {
-  return (
-    <div className="card p-6 md:p-7">
-      <div className="flex items-start gap-4">
-        <div className="icon-box shrink-0">
-          {icon}
-        </div>
-
-        <div>
-          <div className="text-xs font-bold uppercase tracking-[0.12em] text-blue-700">
-            {eyebrow}
-          </div>
-
-          <h2 className="mt-1 text-lg font-semibold text-[var(--ink)]">
-            {title}
-          </h2>
-
-          <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-            {description}
-          </p>
-
-          <Link
-            href={href}
-            className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-blue-700 transition hover:text-blue-800"
-          >
-            {action}
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-      </div>
-    </div>
-  );
+function ActionButton({ href, icon, label }: { href: string; icon: React.ReactNode; label: string }) {
+  return <Link href={href} className="tolbo-action"><span>{icon}</span><strong>{label}</strong><ArrowRight /></Link>;
 }

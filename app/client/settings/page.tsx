@@ -1,5 +1,6 @@
 "use client";
 
+import { EnterpriseIllustration } from "@/components/EnterpriseIllustration";
 import {
   Bell,
   ChevronRight,
@@ -11,7 +12,7 @@ import {
 
 export default function Settings() {
   return (
-    <main className="min-h-screen bg-[var(--bg)]">
+    <main className="tolbo-client-page tolbo-settings-page">
       <div className="container py-8 md:py-10">
 
         {/* ============================================================
@@ -36,6 +37,8 @@ export default function Settings() {
                 paramètres liés à la sécurité de votre espace TOLBO.
               </p>
             </div>
+
+            <EnterpriseIllustration variant="settings" />
 
             <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3">
               <ShieldCheck className="h-5 w-5 text-white/70" />

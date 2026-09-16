@@ -1,5 +1,6 @@
 "use client";
 
+import { EnterpriseIllustration } from "@/components/EnterpriseIllustration";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -34,7 +35,7 @@ export default function Page() {
   ).length;
 
   return (
-    <div className="space-y-8">
+    <div className="tolbo-client-page tolbo-members-page space-y-8">
       {/* ============================================================
           HEADER
       ============================================================ */}
@@ -57,6 +58,8 @@ export default function Page() {
               contrôlez leurs niveaux d&apos;accès à l&apos;espace TOLBO.
             </p>
           </div>
+
+          <EnterpriseIllustration variant="members" />
 
           <button
             type="button"

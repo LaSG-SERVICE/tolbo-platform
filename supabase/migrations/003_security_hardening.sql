@@ -52,3 +52,4 @@ with check (
   public.is_client_admin(organization_id)
   or public.is_tolbo_staff()
 );
+drop policy if exists org_insert on public.organizations;

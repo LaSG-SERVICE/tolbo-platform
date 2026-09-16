@@ -1,8 +1,10 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { EnterpriseIllustration } from "@/components/EnterpriseIllustration";
+import { FormEvent, useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   Building2,
+  CalendarDays,
   CheckCircle2,
   Globe2,
   Hash,
@@ -25,11 +27,15 @@ type Enterprise = {
   address?: string | null;
   country?: string | null;
   website?: string | null;
+  city?: string | null;
+  postal_code?: string | null;
+  establishment_date?: string | null;
 };
 
 type Organization = {
   id: string;
   name?: string | null;
+  logo_url?: string | null;
 };
 
 export default function Company() {
@@ -131,6 +137,9 @@ export default function Company() {
           address: ent.address,
           country: ent.country,
           website: ent.website,
+          ...(Object.prototype.hasOwnProperty.call(ent, "city") ? { city: ent.city } : {}),
+          ...(Object.prototype.hasOwnProperty.call(ent, "postal_code") ? { postal_code: ent.postal_code } : {}),
+          ...(Object.prototype.hasOwnProperty.call(ent, "establishment_date") ? { establishment_date: ent.establishment_date } : {}),
         })
         .eq("id", ent.id);
 
@@ -158,6 +167,8 @@ export default function Company() {
       ent.sector,
       ent.address,
       ent.country,
+      ent.city,
+      ent.postal_code,
       ent.website,
     ];
 
@@ -182,7 +193,7 @@ export default function Company() {
 
   if (loading) {
     return (
-      <div className="space-y-6">
+      <div className="tolbo-client-page space-y-6">
         <div className="section-title">Mon entreprise</div>
 
         <div className="card flex min-h-[320px] items-center justify-center">
@@ -241,22 +252,19 @@ export default function Company() {
   }
 
   return (
-    <div className="space-y-7">
+    <div className="tolbo-client-page tolbo-company-page space-y-7">
       {/* ============================================================
           HEADER
       ============================================================ */}
 
-      <div className="relative overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_12px_40px_rgba(16,24,40,0.06)]">
+      <div className="company-hero relative overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_12px_40px_rgba(16,24,40,0.06)]">
         <div className="absolute inset-x-0 top-0 h-1 bg-[var(--blue)]" />
 
         <div className="relative p-6 md:p-8">
-          <div className="flex flex-col gap-7 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex items-start gap-4">
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[var(--blue-light)] text-[var(--blue)]">
-                <Building2 className="h-7 w-7" />
-              </div>
-
-              <div>
+          <div className="company-hero-grid">
+            <div className="company-header-identity">
+              <div className="company-header-logo">{(org?.logo_url || null) ? <img src={String(org?.logo_url)} alt="Logo de l’entreprise" /> : <span>{(ent.legal_name || org?.name || "E").trim().charAt(0).toUpperCase()}</span>}</div>
+              <div className="company-header-copy">
                 <div className="mb-2 flex flex-wrap items-center gap-2">
                   <span className="badge badge-blue">
                     <Landmark className="h-3.5 w-3.5" />
@@ -282,8 +290,11 @@ export default function Company() {
               </div>
             </div>
 
+
+            <div className="company-hero-visual"><EnterpriseIllustration variant="company" /></div>
+
             {/* Complétude */}
-            <div className="min-w-[230px] rounded-2xl border border-slate-200 bg-[var(--bg-soft)] p-4">
+            <div className="company-hero-completion min-w-[230px] rounded-2xl border border-slate-200 bg-[var(--bg-soft)] p-4">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold uppercase tracking-[0.08em] text-[var(--muted)]">
                   Complétude
@@ -343,7 +354,8 @@ export default function Company() {
           CONTENU PRINCIPAL
       ============================================================ */}
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
+      <div className="company-form-grid">
+        <div className="company-form-main">
         {/* ==========================================================
             FORMULAIRE
         ========================================================== */}
@@ -465,23 +477,16 @@ export default function Company() {
                 </div>
               </div>
 
-              <div className="md:w-1/2">
-                <label className="label">Pays</label>
-
-                <div className="relative">
-                  <Globe2 className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-
-                  <input
-                    className="field pl-10"
-                    value={ent.country || ""}
-                    onChange={(e) =>
-                      updateField("country", e.target.value)
-                    }
-                    placeholder="Pays"
-                  />
-                </div>
-              </div>
+              <SmartPlaceField label="Pays" icon={<Globe2 className="h-4 w-4" />} value={ent.country || ""} onChange={(v)=>updateField("country",v)} kind="country" placeholder="Commencez à saisir un pays…" />
+              <SmartPlaceField label="Ville" icon={<MapPin className="h-4 w-4" />} value={ent.city || ""} onChange={(v)=>updateField("city",v)} kind="city" placeholder="3 lettres minimum pour suggérer une ville…" />
+              <SmartPlaceField label="Code postal" icon={<Hash className="h-4 w-4" />} value={ent.postal_code || ""} onChange={(v)=>updateField("postal_code",v)} kind="postal" placeholder="Code postal" />
             </div>
+          </section>
+
+          {/* DATE DE RÉFÉRENCE */}
+          <section className="card overflow-hidden">
+            <div className="border-b border-slate-200 px-6 py-5 md:px-7"><div className="flex items-start gap-3"><div className="icon-box h-10 w-10 rounded-xl"><CalendarDays className="h-5 w-5" /></div><div><h2 className="font-semibold text-[var(--ink)]">Date de référence</h2><p className="mt-1 text-sm text-[var(--muted)]">Utilisez le calendrier pour saisir une date sans erreur de format.</p></div></div></div>
+            <div className="p-6 md:p-7"><label className="label">Date de création / début d’activité</label><div className="relative"><CalendarDays className="pointer-events-none absolute left-3.5 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-slate-400" /><input className="field pl-10 tolbo-date-field" type="date" value={ent.establishment_date || ""} onChange={(e)=>updateField("establishment_date",e.target.value)} /></div></div>
           </section>
 
           {/* PRÉSENCE DIGITALE */}
@@ -563,11 +568,13 @@ export default function Company() {
           </div>
         </form>
 
+        </div>
+
         {/* ==========================================================
             COLONNE DROITE
         ========================================================== */}
 
-        <aside className="space-y-6">
+        <aside className="company-summary space-y-6">
           {/* LOGO */}
           <section className="card overflow-hidden">
             <div className="border-b border-slate-200 px-6 py-5">
@@ -686,6 +693,14 @@ export default function Company() {
 /* ================================================================
    SOUS-COMPOSANT — ÉTAT D’UNE INFORMATION
 ================================================================ */
+
+function SmartPlaceField({label, icon, value, onChange, kind, placeholder}:{label:string;icon:ReactNode;value:string;onChange:(v:string)=>void;kind:"country"|"city"|"postal";placeholder:string}){
+  const [suggestions,setSuggestions]=useState<string[]>([]);
+  const countries=useMemo(()=>{try{const codes=(Intl as any).supportedValuesOf?.("region")||[]; const dn=new Intl.DisplayNames(["fr"],{type:"region"}); return codes.map((c:string)=>dn.of(c)||c).filter(Boolean).sort((a:string,b:string)=>a.localeCompare(b,"fr"));}catch{return ["Afrique du Sud","Algérie","Allemagne","Belgique","Burkina Faso","Cameroun","Canada","Côte d’Ivoire","France","Ghana","Mali","Maroc","Niger","Nigeria","Sénégal","Suisse","Togo"]}},[]);
+  useEffect(()=>{let cancelled=false; if((kind!=="country")&&value.trim().length>=3){const timer=setTimeout(async()=>{try{const q=encodeURIComponent(value.trim()); const url=kind==="postal"?`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=6&addressdetails=1&q=${q}`:`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=6&addressdetails=1&city=${q}`; const r=await fetch(url,{headers:{"Accept-Language":"fr"}}); const data=await r.json(); const vals=(data||[]).map((x:any)=>kind==="postal"?(x.address?.postcode?`${x.address.postcode} · ${x.address.city||x.address.town||x.address.village||x.display_name}`:x.display_name):(x.address?.city||x.address?.town||x.address?.village||x.name)).filter(Boolean); if(!cancelled)setSuggestions(Array.from(new Set(vals)).slice(0,6) as string[]);}catch{if(!cancelled)setSuggestions([])}},300); return()=>{cancelled=true;clearTimeout(timer)}}else setSuggestions([]); return()=>{}},[value,kind]);
+  const listId=`tolbo-${kind}-suggestions`; const filtered=kind==="country"&&value.length>=3?countries.filter(c=>c.toLocaleLowerCase("fr").includes(value.toLocaleLowerCase("fr"))).slice(0,8):suggestions;
+  return <div><label className="label">{label}</label><div className="relative"><span className="pointer-events-none absolute left-3.5 top-1/2 z-10 -translate-y-1/2 text-slate-400">{icon}</span><input className="field pl-10" list={listId} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} autoComplete="off"/><datalist id={listId}>{filtered.map((x)=><option key={x} value={x}/>)}</datalist></div>{value.length>=3&&<span className="tolbo-smart-hint">Suggestions activées · sélectionnez une proposition ou continuez votre saisie</span>}</div>
+}
 
 function ProfileCheck({
   label,

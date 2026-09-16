@@ -1,5 +1,6 @@
 "use client";
 
+import { EnterpriseIllustration } from "@/components/EnterpriseIllustration";
 import Link from "next/link";
 import {
   AlertCircle,
@@ -40,7 +41,7 @@ export default function Page() {
   ).length;
 
   return (
-    <div className="space-y-8">
+    <div className="tolbo-client-page tolbo-requests-page space-y-8">
       {/* ============================================================
           HEADER
       ============================================================ */}
@@ -63,6 +64,8 @@ export default function Page() {
               entreprise et suivez leur traitement depuis votre espace.
             </p>
           </div>
+
+          <EnterpriseIllustration variant="requests" />
 
           <div className="inline-flex w-fit items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/75">
             <ShieldCheck className="h-4 w-4" />
